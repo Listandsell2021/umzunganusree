@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState,forwardRef } from 'react'
+import { useState, forwardRef } from 'react'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -57,17 +57,18 @@ const CardContent = styled(MuiCardContent)(({ theme }) => ({
 const Pricing = ({ apiData }) => {
   // ** States
   const [plan, setPlan] = useState('monthly')
+  const [open, setOpen] = useState(false)
   const [show, setShow] = useState(false)
   const [title, settitle] = useState("")
-  const [monthlyPrice,setmonthlyPrice] = useState("")
-  const [subtitle,setsubtitle] = useState("")
-  const [perMonth,setperMonth] = useState("")
+  const [monthlyPrice, setmonthlyPrice] = useState("")
+  const [subtitle, setsubtitle] = useState("")
+  const [perMonth, setperMonth] = useState("")
   const [totalAnnual, settotalAnnual] = useState("")
   const [planBenefits1, setplanBenefits1] = useState("")
   const [planBenefits2, setplanBenefits2] = useState("")
   const [planBenefits3, setplanBenefits3] = useState("")
   const [planBenefits4, setplanBenefits4] = useState("")
-   const [planBenefits5, setplanBenefits5] = useState("")
+  const [planBenefits5, setplanBenefits5] = useState("")
   const [status, setStatus] = useState("")
   const [languages, setLanguages] = useState([])
   const handleChange = e => {
@@ -78,7 +79,9 @@ const Pricing = ({ apiData }) => {
     }
   }
 
-const handleChangeTitle = e => {
+  const handleClickOpen = () => setOpen(true);
+
+  const handleChangeTitle = e => {
     settitle(e.target.value)
   }
   const handleChangePlanPrice = e => {
@@ -87,11 +90,11 @@ const handleChangeTitle = e => {
   const handleChangeSubTitle = e => {
     setsubtitle(e.target.value)
   }
-const handleChangePerMonthPriceUYearly= e => {
-    var monthval=parseInt(e.target.value)
-    
+  const handleChangePerMonthPriceUYearly = e => {
+    var monthval = parseInt(e.target.value)
+
     setperMonth(e.target.value)
-    settotalAnnual(monthval*12)
+    settotalAnnual(monthval * 12)
   }
   const handleChangeStatus = e => {
     setStatus(e.target.value)
@@ -102,67 +105,121 @@ const handleChangePerMonthPriceUYearly= e => {
   const handleChangeBenifits1 = e => {
     setplanBenefits1(e.target.value)
   }
-    const handleChangeBenifits2 = e => {
+  const handleChangeBenifits2 = e => {
     setplanBenefits2(e.target.value)
   }
-    const handleChangeBenifits3 = e => {
+  const handleChangeBenifits3 = e => {
     setplanBenefits3(e.target.value)
   }
-    const handleChangeBenifits4 = e => {
+  const handleChangeBenifits4 = e => {
     setplanBenefits4(e.target.value)
   }
-const handleChangeBenifits5 = e => {
+  const handleChangeBenifits5 = e => {
     setplanBenefits5(e.target.value)
   }
-    async function postpackage()
-   {
-    
-     
-      var datas={"collection":"Packages_SuperAdmin"}
-    const response1 = await axios.post('http://localhost:3000/api/getLastId', {
-       datas
-  })
-    var packageData=
-    {
-    "imgWidth":{"$numberInt":"100"},
-     "imgHeight":{"$numberInt":"100"},
-    "title":title,
-     "popularPlan":false,
-      "currentPlan":false,
-    "monthlyPrice":parseInt(monthlyPrice),
-    "subtitle":subtitle,
-    "imgSrc":"/images/pages/pricing-illustration-1.png",
-    "yearlyPlan":
-    {"perMonth":parseInt(perMonth),
-    "totalAnnual":totalAnnual
-    },
-    "planBenefits":
-    [planBenefits1,
-    planBenefits2,
-    planBenefits3,
-    planBenefits4,
-    planBenefits5],
-   "plan_id":"plan"+parseInt(response1)+1
-  }  
-  console.log(packageData)
+  async function postpackage() {
 
-   const response = await axios.post('http://localhost:3000/api/postPackageSuperAdmin', {
-   packageData
-  })
-  
-   console.log(response.status)
-   window.location.reload(false);
-  
+
+    var datas = { "collection": "Packages_SuperAdmin" }
+    const response1 = await axios.post('http://localhost:3000/api/getLastId', {
+      datas
+    })
+    var packageData =
+    {
+      "imgWidth": { "$numberInt": "100" },
+      "imgHeight": { "$numberInt": "100" },
+      "title": title,
+      "popularPlan": false,
+      "currentPlan": false,
+      "monthlyPrice": parseInt(monthlyPrice),
+      "subtitle": subtitle,
+      "imgSrc": "/images/pages/pricing-illustration-1.png",
+      "yearlyPlan":
+      {
+        "perMonth": parseInt(perMonth),
+        "totalAnnual": totalAnnual
+      },
+      "planBenefits":
+        [planBenefits1,
+          planBenefits2,
+          planBenefits3,
+          planBenefits4,
+          planBenefits5],
+      "plan_id": "plan" + parseInt(response1) + 1
+    }
+    console.log(packageData)
+
+    const response = await axios.post('http://localhost:3000/api/postPackageSuperAdmin', {
+      packageData
+    })
+
+    console.log(response.status)
+    window.location.reload(false);
+
   }
-  
+
   return (
     <Card>
-      <CardContent>
-        <PricingHeader plan={plan} handleChange={handleChange} />
-        <PricingPlans plan={plan} data={apiData} />
+      <CardContent >
         
+        <PricingHeader plan={plan} handleChange={handleChange} />
+        <Grid item xs={12} sm={6} lg={4}>
+        <Card
+          sx={{
+            cursor: "pointer",
+            marginLeft: "38%",
+            marginRight: "40%",
+            marginBottom: "25px",
+            marginTop: "-2%",
+            display: "flex",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <Grid container sx={{ height: "100%" }}>
+            <Grid item xs={2} lg={3}>
+              <Box
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+
+
+              </Box>
+            </Grid>
+            <Grid item xs={7}>
+
+              <CardContents sx={{ textAlign: 'center' }}>
+                <AccountOutline sx={{ mb: 2, fontSize: '2rem' }} />
+                <Typography variant='h6' sx={{ mb: 4 }}>
+                  Add Package
+                </Typography>
+                <Typography sx={{ mb: 3 }}></Typography>
+                <Button variant='contained' onClick={() => setShow(true)}>
+                  add
+                </Button>
+              </CardContents>
+
+
+
+            </Grid>
+          </Grid>
+        </Card>
+      </Grid>
+        <PricingPlans plan={plan} data={apiData} />
+
       </CardContent>
-       <CardContents sx={{ textAlign: 'center' }}>
+
+
+
+
+
+
+
+      {/* <CardContents sx={{ textAlign: 'center' }}>
         <AccountOutline sx={{ mb: 2, fontSize: '2rem' }} />
         <Typography variant='h6' sx={{ mb: 4 }}>
           Add Package
@@ -171,11 +228,12 @@ const handleChangeBenifits5 = e => {
         <Button variant='contained' onClick={() => setShow(true)}>
           add
         </Button>
-      </CardContents>
+      </CardContents> */}
       <PricingCTA />
+
       {/* <PricingFooter data={apiData} /> */}
-      
-       <Dialog
+
+      <Dialog
         fullWidth
         open={show}
         maxWidth='md'
@@ -203,10 +261,10 @@ const handleChangeBenifits5 = e => {
               <TextField fullWidth label='Plan Title' placeholder='Basic' onChange={handleChangeTitle} value={title} />
             </Grid>
             <Grid item sm={6} xs={12}>
-              <TextField fullWidth value={monthlyPrice}  onChange={handleChangePlanPrice}  label='Plan Price' placeholder='Doe' />
+              <TextField fullWidth value={monthlyPrice} onChange={handleChangePlanPrice} label='Plan Price' placeholder='Doe' />
             </Grid>
             <Grid item xs={12}>
-              <TextField fullWidth value={subtitle}  onChange={handleChangeSubTitle} label='Sub Title' placeholder='johnDoe' />
+              <TextField fullWidth value={subtitle} onChange={handleChangeSubTitle} label='Sub Title' placeholder='johnDoe' />
             </Grid>
             <Grid item sm={6} xs={12}>
               <TextField
@@ -221,7 +279,7 @@ const handleChangeBenifits5 = e => {
             <Grid item sm={6} xs={12}>
               <FormControl fullWidth>
                 <InputLabel id='status-select'>Status</InputLabel>
-                <Select value={status} fullWidth labelId='status-select'  onChange={handleChangeStatus} label='Status'>
+                <Select value={status} fullWidth labelId='status-select' onChange={handleChangeStatus} label='Status'>
                   <MenuItem value='Status'>Status</MenuItem>
                   <MenuItem value='Active'>Active</MenuItem>
                   <MenuItem value='Inactive'>Inactive</MenuItem>
@@ -232,26 +290,26 @@ const handleChangeBenifits5 = e => {
             <Grid item sm={6} xs={12}>
               <TextField fullWidth label='Annual price' placeholder='878' onChange={handleChangeAnnualPrice} value={totalAnnual} />
             </Grid>
-             <Grid item sm={6} xs={12}>
-              <TextField fullWidth label='Plan Benifits 1' placeholder='1.Benifits'  onChange={handleChangeBenifits1} value={planBenefits1} />
+            <Grid item sm={6} xs={12}>
+              <TextField fullWidth label='Plan Benifits 1' placeholder='1.Benifits' onChange={handleChangeBenifits1} value={planBenefits1} />
             </Grid>
-             <Grid item sm={6} xs={12}>
-              <TextField fullWidth label='Plan Benifits 2' placeholder='2.Benifits'  onChange={handleChangeBenifits2} value={planBenefits2} />
+            <Grid item sm={6} xs={12}>
+              <TextField fullWidth label='Plan Benifits 2' placeholder='2.Benifits' onChange={handleChangeBenifits2} value={planBenefits2} />
             </Grid>
-             <Grid item sm={6} xs={12}>
+            <Grid item sm={6} xs={12}>
               <TextField fullWidth label='Plan Benifits 3' placeholder='3.Benifits' onChange={handleChangeBenifits3} value={planBenefits3} />
             </Grid>
-             <Grid item sm={6} xs={12}>
+            <Grid item sm={6} xs={12}>
               <TextField fullWidth label='Plan Benifits 4' placeholder='4.Benifits' onChange={handleChangeBenifits4} value={planBenefits4} />
             </Grid>
-             <Grid item sm={6} xs={12}>
+            <Grid item sm={6} xs={12}>
               <TextField fullWidth label='Plan Benifits 5' placeholder='4.Benifits' onChange={handleChangeBenifits5} value={planBenefits5} />
             </Grid>
-        
-            
-           
-            
-           
+
+
+
+
+
           </Grid>
         </DialogContent>
         <DialogActions sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}>
@@ -268,12 +326,12 @@ const handleChangeBenifits5 = e => {
 }
 
 export const getServerSideProps = async () => {
-  
+
   const res1 = await axios.post('http://localhost:3000/api/getPackageSuperAdmin')
   //const apiData = res.data
-  var apiData=res1.data
- // console.log(apiData)
-   //apiData=apiData[0]
+  var apiData = res1.data
+  // console.log(apiData)
+  //apiData=apiData[0]
   //console.log(apiData2[0])
   return {
     props: {
