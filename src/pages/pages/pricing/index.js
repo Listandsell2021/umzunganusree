@@ -1,5 +1,7 @@
 // ** React Imports
-import { useState, forwardRef } from 'react'
+import { useState, forwardRef, useRef } from 'react'
+//import XLSX from "xlsx";
+import * as XLSX from "xlsx";
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -55,6 +57,7 @@ const CardContent = styled(MuiCardContent)(({ theme }) => ({
 }))
 
 const Pricing = ({ apiData }) => {
+
   // ** States
   const [plan, setPlan] = useState('monthly')
   const [open, setOpen] = useState(false)
@@ -71,6 +74,70 @@ const Pricing = ({ apiData }) => {
   const [planBenefits5, setplanBenefits5] = useState("")
   const [status, setStatus] = useState("")
   const [languages, setLanguages] = useState([])
+
+  const fileRef = useRef();
+  const [exceldata, setExceldata] = useState([])
+  const [file, setFile] = useState(null)
+  const [fileName, setFileName] = useState(null)
+  const acceptableFileName = ['xlsx', 'xls']
+  const checkFileName = (name) => {
+
+
+    return acceptableFileName.includes(name.split('.').pop().toLowerCase())
+
+  }
+
+
+
+  const handleFile = async (e) => {
+
+    try {
+
+      let myfile = e.target.files[0];
+      if (!myfile) return;
+
+      if (!checkFileName(myfile.name)) {
+        alert("Invalid File Type!")
+        setFileName("")
+        setFile("");
+       
+
+      }
+      else {
+ 
+        var bufferFileData = await myfile.arrayBuffer();
+        var fileData = bufferFileData;
+        var workbook = XLSX.read(fileData, { type: "binary" });
+        const wsname = workbook.SheetNames[0];
+        const ws = workbook.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+        console.log("Data>>>" + data);
+        setExceldata(data)
+        setFile(myfile);
+        setFileName(myfile.name)
+      }
+
+    }
+    catch (err) {
+      console.error('error occured: ', err.message)
+    }
+
+
+
+  }
+
+  const handleRemove = () => {
+
+    setFile(null);
+    setFileName(null);
+    fileRef.current.value = "";
+
+
+  }
+
+
+
+
   const handleChange = e => {
     if (e.target.checked) {
       setPlan('annually')
@@ -161,59 +228,103 @@ const Pricing = ({ apiData }) => {
   return (
     <Card>
       <CardContent >
-        
+
         <PricingHeader plan={plan} handleChange={handleChange} />
-        <Grid item xs={12} sm={6} lg={4}>
-        <Card
-          sx={{
-            cursor: "pointer",
-            marginLeft: "38%",
-            marginRight: "40%",
-            marginBottom: "25px",
-            marginTop: "-2%",
-            display: "flex",
-            justifyContent: "center",
-            height: "100%",
-          }}
-        >
-          <Grid container sx={{ height: "100%" }}>
-            <Grid item xs={2} lg={3}>
-              <Box
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+        <Grid item sx0 sm={6} lg={4}>
+          <Card
+            sx={{
+              margin: '0 auto',
+              display: 'inline-flex',
+              paddingInlineEnd: '20px',
+              flexDirection: 'row',
 
 
-              </Box>
+
+
+
+              // cursor: "pointer",
+              marginLeft: "35%",
+              // marginRight: "40%",
+              marginBottom: "25px",
+              marginTop: "-2%",
+              // display: "flex",
+              // justifyContent: "center",
+              // height: "100%",
+            }}
+          >
+            <Grid container sx={{ height: "100%" }}>
+              <Grid item xs={2} lg={3}>
+                <Box
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+
+
+                </Box>
+              </Grid>
+              <Grid item xs={7}>
+
+                <CardContents sx={{ textAlign: 'center' }}>
+                  <AccountOutline sx={{ mb: 2, fontSize: '2rem' }} />
+                  <Typography variant='h6' sx={{ mb: 4 }}>
+                    Add Package
+                  </Typography>
+                  <Typography sx={{ mb: 3 }}></Typography>
+                  <Button variant='contained' onClick={() => setShow(true)}>
+                    add
+                  </Button>
+
+                  <div>
+                    <input
+                      type='file'
+                      accept='xlsx,xls'
+                      multiple={false}
+                      onChange={(e) => handleFile(e)}
+                      ref={fileRef}
+                    />
+                    {fileName && (
+                      <Button
+                        sx={{
+
+                          flexDirection: 'row',
+
+                          marginLeft: "auto",
+                          marginRight: "-70px",
+
+
+
+                          // cursor: "pointer",
+                          // marginLeft: "35%",
+                          // marginRight: "40%",
+
+                          marginTop: "-20%",
+                          display: "flex",
+                          alignItems: "flex-end",
+                          justifyContent: "right",
+                        }}
+                        onClick={handleRemove}>X</Button>
+                    )}
+                  </div>
+
+                  <div classname='mb-2'>
+                    {fileName && <TextField value={exceldata}>{fileName}</TextField>}
+
+                  </div>
+                </CardContents>
+
+
+
+              </Grid>
             </Grid>
-            <Grid item xs={7}>
-
-              <CardContents sx={{ textAlign: 'center' }}>
-                <AccountOutline sx={{ mb: 2, fontSize: '2rem' }} />
-                <Typography variant='h6' sx={{ mb: 4 }}>
-                  Add Package
-                </Typography>
-                <Typography sx={{ mb: 3 }}></Typography>
-                <Button variant='contained' onClick={() => setShow(true)}>
-                  add
-                </Button>
-              </CardContents>
-
-
-
-            </Grid>
-          </Grid>
-        </Card>
-      </Grid>
+          </Card>
+        </Grid>
         <PricingPlans plan={plan} data={apiData} />
 
       </CardContent>
-
-
 
 
 

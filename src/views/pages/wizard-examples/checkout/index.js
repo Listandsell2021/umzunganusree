@@ -1,5 +1,6 @@
 // ** React Imports
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import * as XLSX from "xlsx";
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -10,10 +11,9 @@ import StepLabel from '@mui/material/StepLabel'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import MuiStepper from '@mui/material/Stepper'
+import Button from '@mui/material/Button'
 import axios from "axios";
-
 import TextField from "@mui/material/TextField";
-
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 // ** Icon Imports
@@ -29,6 +29,8 @@ import UsersInvoiceListTable from "src/views/apps/adminleads/view/UsersInvoiceLi
 // ** Styled Components
 import StepperWrapper from 'src/@core/styles/mui/stepper'
 import { set } from 'nprogress'
+import { Table } from 'mdi-material-ui';
+import minutesToMilliseconds from 'date-fns/fp/minutesToMilliseconds';
 
 const steps = [
   {
@@ -137,7 +139,48 @@ const CheckoutWizard = ({ id }) => {
   const [moveinElevatorWeight, setmoveinElevatorWeight] = useState("");
 
 
+  const fileRef = useRef();
+  const [exceldata, setExceldata] = useState([])
+  const [fileName, setFileName] = useState(null)
+  const acceptableFileName = ['xlsx', 'xls']
 
+  const checkFileName = (name) => {
+    return acceptableFileName.includes(name.split('.').pop().toLowerCase())
+  }
+
+  const handleFile = async (e) => {
+    try {
+      const myfile = e.target.files[0];
+      if (!myfile) return;
+      if (!checkFileName(myfile.name)) {
+        alert("Invalid File Type!")
+        setFileName("")
+      }
+      else {
+        const bufferFileData = await myfile.arrayBuffer();
+        const fileData = bufferFileData;
+        var workbook = XLSX.read(fileData, { type: "binary" });
+        const wsname = workbook.SheetNames[0];
+        const ws = workbook.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+        const newStr = data.replaceAll(",", " ");
+        console.log("Data>>>" + newStr);
+        setExceldata(newStr)
+        setFileName(myfile.name)
+      }
+
+    }
+    catch (err) {
+      console.error('error occured: ', err.message)
+    }
+  }
+
+  const handleRemove = () => {
+    setFileName("");
+    fileRef.current.value = "";
+
+
+  }
 
 
   // Handle Stepper
@@ -638,6 +681,7 @@ const CheckoutWizard = ({ id }) => {
             </Typography>
             <Grid id={"2"} container spacing={8} sx={{ mt: 1 }}>
               <Grid item xs={16} lg={6}>
+
                 <Box
                   sx={{
                     borderRadius: 1,
@@ -679,9 +723,39 @@ const CheckoutWizard = ({ id }) => {
                     />
                   </Box>
                 </Box>
+                <Divider sx={{ mt: 7 }} />
+                <input
+                  type='file'
+                  accept='xlsx,xls'
+                  size="60"
+                  multiple={false}
+                  onChange={(e) => handleFile(e)}
+                  ref={fileRef}
+                  onClick={e => (e.target.value = null)}
+                />
+                {fileName && (
+                  <Button
+                    onClick={handleRemove}>X</Button>
+                )}
+
               </Grid>
+
+              {fileName &&
+                <Grid item xs={16} lg={6}>
+
+                  <Box
+                  > <TextField sx={{
+                    marginLeft: "25%",
+                    height: "220px",
+                    width: "320px"
+
+                  }} label='Excel Data' rows={7} autoComplete="off" multiline={true} value={exceldata}>{fileName}</TextField>
+
+                  </Box>
+
+                </Grid>}
             </Grid>
-          </Grid>
+          </Grid >
         );
       case 3:
         return <UsersInvoiceListTable productdata={productdata} />;
